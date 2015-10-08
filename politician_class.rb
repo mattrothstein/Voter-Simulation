@@ -7,7 +7,7 @@ class Politician < Voter
     @party_affiliation = party_affiliation
   end
 
-  def vote(politicians = [])
+  def vote(*_)
     self
   end
 

@@ -2,12 +2,7 @@ require "./voter_class.rb"
 require "./population_class.rb"
 require "./politician_class.rb"
 require "./election_class.rb"
-#require "pry-byebug"
-# include Voter
-# include Population
-# include Politician
-# include Election
-
+require "colorize"
 
 class UserInterface
   attr_accessor :pop
@@ -89,20 +84,33 @@ class UserInterface
   end
 
   def list
-    puts "POLITICIANS"
+    puts "POLITICIANS".colorize(:white)
     @pop.politicians.each do |object|
-      puts "#{object.name} #{object.party_affiliation}"
+      if object.party_affiliation == :Rep
+        party = :red
+      else
+        party = :blue
+      end
+      puts "#{object.name.capitalize.colorize(party)} #{object.party_affiliation.to_s.colorize(party)}"
     end
-    puts "REGISTERED VOTERS"
+    puts "REGISTERED VOTERS".colorize(:white)
     @pop.voters.each do |object|
-      puts "#{object.name} #{object.political_affiliation.upcase}"
+      puts "#{object.name.capitalize} #{object.political_affiliation.upcase}"
     end
     main_menu
   end
 
   def vote
     election = Election.new(@pop)
-    election.poll
+    standings = election.poll
+    winner = standings.max_by { |k, v| v }[0]
+    politician = @pop.politicians.select {|x| x.name == winner}.first
+    if politician.party_affiliation == :Rep
+      party = :red
+    else
+      party = :blue
+    end
+      puts winner.capitalize.colorize(party)
     main_menu
   end
 
@@ -121,30 +129,26 @@ class UserInterface
   def update_voter
     puts "Name?"
     search_name = gets.chomp.downcase
-    @pop.voters.each do |x|
-      if x.name == search_name
-        puts "Found #{search_name}. Please enter new information now."
-        puts "Name ?"
-        name = gets.chomp
-        response = voter_affiliation
-        @pop.update_voter(search_name, name, response)
-      end
-    end
+    voter = @pop.voters.select {|x| x.name == search_name }.first
+    puts "Found #{search_name}. Please enter new information now."
+    puts "Name ?"
+    name = gets.chomp
+    response = voter_affiliation
+    voter.update_name(name)
+    voter.update_politics(response)
   end
 
   def update_politician
     puts "Name?"
     search_name = gets.chomp.downcase
-    @pop.politicians.each do |x|
-      if x.name == search_name
-        puts "Found #{search_name}. Please enter new information now."
-        puts "Name ?"
-        name = gets.chomp
-        response = politician_affiliation
-        @pop.update_politician(search_name, name, response)
-      end
+    politician = @pop.politicians.select {|x| x.name == search_name }.first
+    puts "Found #{search_name}. Please enter new information now."
+    puts "Name ?"
+    name = gets.chomp
+    response = politician_affiliation
+    politician.update_name(name)
+    politician.update_party(response)
   end
-end
 
   def validator(user_response, valid_response)
     if valid_response.include? user_response

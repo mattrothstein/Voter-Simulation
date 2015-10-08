@@ -25,21 +25,14 @@ class Voter
 
   def vote (politicians = [])
     eligible_politicians = []
-    # binding.pry
     if (rand < VOTER_TENDENCY[@political_affiliation])
       tendency =  :Rep
     else
        tendency = :Dem
     end
 
-    eligible_politicians = politicians.select do |politician|
-      politician.party_affiliation == tendency
-    end
-    # politicians.each do |poli|
-    #   if (poli.party_affiliation == tendency)
-    #     eligible_politicians.push(poli.name)
-    #   end
-    # end
+    eligible_politicians = politicians.select { |politician| politician.party_affiliation == tendency }
+
     unless eligible_politicians.empty?
       eligible_politicians.sample
     else

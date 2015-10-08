@@ -25,9 +25,9 @@ class Election
     end
 
     if @votes == {}
-      puts  "No one has voted"
+      puts "No one has voted"
     else
-      puts @votes
+      @votes
     end
   end
 end
